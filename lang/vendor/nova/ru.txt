@@ -1,0 +1,1 @@
+https://github.com/coderello/laravel-nova-lang/blob/1.0/resources/lang/ru.json
