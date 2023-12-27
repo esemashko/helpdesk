@@ -122,7 +122,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
         });
     }
 
-    /**
+    /**X
      * Get the dashboards that should be listed in the Nova sidebar.
      *
      * @return array
