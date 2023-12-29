@@ -19,3 +19,7 @@ yarn-error.log
 /.vscode
 .idea
 server.txt
+/_lighthouse_ide_helper.php
+/programmatic-types.graphql
+/schema-directives.graphql
+/config/#

@@ -13,16 +13,18 @@
         "dnwjn/nova-button": "^4.0",
         "esemashko/color-badge": "@dev",
         "esemashko/name-status": "@dev",
+        "esemashko/ticket-detail": "@dev",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^10.10",
         "laravel/nova": "^4.0",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
         "maatwebsite/laravel-nova-excel": "^1.3",
+        "mll-lab/laravel-graphiql": "^3.1",
+        "nuwave/lighthouse": "^6.29",
         "outl1ne/nova-sortable": "^3.4",
         "sereny/nova-permissions": "^1.4",
-        "spatie/eloquent-sortable": "^4.1",
-        "esemashko/ticket-detail": "@dev"
+        "spatie/eloquent-sortable": "^4.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.9",
