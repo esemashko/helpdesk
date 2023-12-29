@@ -21,7 +21,8 @@
         "maatwebsite/laravel-nova-excel": "^1.3",
         "outl1ne/nova-sortable": "^3.4",
         "sereny/nova-permissions": "^1.4",
-        "spatie/eloquent-sortable": "^4.1"
+        "spatie/eloquent-sortable": "^4.1",
+        "esemashko/ticket-detail": "@dev"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.9",
@@ -88,6 +89,10 @@
         "1": {
             "type": "path",
             "url": "./nova-components/ColorBadge"
+        },
+        "2": {
+            "type": "path",
+            "url": "./nova-components/TicketDetail"
         }
     }
 }

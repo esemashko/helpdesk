@@ -22,6 +22,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $collection = collect([
             'Ticket',
+            'Comment',
             'Company',
             'User',
             'Priority',
@@ -39,6 +40,13 @@ class RolesAndPermissionsSeeder extends Seeder
                 case 'Company':
                 case 'User':
                     Permission::create(['group' => $item, 'name' => 'viewOwn'.$item]);
+                    break;
+            }
+
+            switch ($item) {
+                case 'Comment':
+                    Permission::create(['group' => $item, 'name' => 'viewOnlyPublic'.$item]);
+                    Permission::create(['group' => $item, 'name' => 'manageOwn'.$item]);
                     break;
             }
 

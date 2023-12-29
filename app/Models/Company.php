@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Scopes\CompanyScope;
-use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -22,11 +21,6 @@ class Company extends Model
     ];
 
     protected $table = 'companies';
-
-    protected static function boot(): void
-    {
-        parent::boot();
-    }
 
     protected static function booted(): void
     {

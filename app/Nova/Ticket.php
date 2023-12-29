@@ -4,10 +4,15 @@ namespace App\Nova;
 
 use Esemashko\ColorBadge\ColorBadge;
 use Esemashko\NameStatus\NameStatus;
+use Esemashko\TicketDetail\TicketDetail;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\FormData;
+use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\HasManyThrough;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -40,11 +45,6 @@ class Ticket extends Resource
 
     private bool $isUserSupport;
 
-    public function subtitle()
-    {
-        return "Priority: {$this->priority->name}";
-    }
-
     public function __construct($resource = null)
     {
         parent::__construct($resource);
@@ -55,10 +55,16 @@ class Ticket extends Resource
             })->exists();
     }
 
+    public function subtitle()
+    {
+        return "Priority: {$this->priority->name}";
+    }
+
     /**
      * Get the fields displayed by the resource.
      *
-     * @param  NovaRequest  $request
+     * @param NovaRequest $request
+     *
      * @return array
      */
     public function fields(NovaRequest $request): array
@@ -66,13 +72,12 @@ class Ticket extends Resource
         return [
 
             NameStatus::make('Name')
+                ->textAlign('left')
                 ->sortable()
                 ->required()
-                ->showOnIndex()
-                ->showOnCreating(false)
-                ->showOnUpdating(false)
-                ->showOnDetail(false)
-                ->textAlign('left')
+                ->hideFromDetail()
+                ->hideWhenCreating()
+                ->hideWhenUpdating()
                 ->resolveUsing(function ($value, $resource) {
                     return [
                         'name' => $resource->name,
@@ -81,54 +86,93 @@ class Ticket extends Resource
                 }),
 
             Text::make('Name')
-                ->required()
-                ->showOnIndex(false)
-                ->showOnCreating()
-                ->showOnUpdating()
-                ->showOnDetail()
-                ->textAlign('left'),
+                ->textAlign('left')
+                ->rules('required', 'max:255')
+                ->hideFromIndex(),
+                //->hideFromDetail(),
 
             ColorBadge::make('Priority')
-                ->showOnIndex(false)
-                ->showOnCreating(false)
-                ->showOnUpdating(false)
-                ->showOnDetail(),
+                ->textAlign('left')
+                ->hideFromIndex()
+                //->hideFromDetail()
+                ->hideWhenCreating()
+                ->hideWhenUpdating(),
 
             BelongsTo::make('Priority')
-                ->sortable()
+                ->textAlign('left')
                 ->required()
-                ->showOnIndex(false)
-                ->showOnCreating()
-                ->showOnUpdating()
-                ->showOnDetail(false)
-                ->filterable() // TODO фильтр сделать ко всем
+                ->filterable()
+                ->hideFromIndex()
+                ->hideFromDetail()
                 ->default(function () {
                     return \App\Models\Priority::where('is_default', true)->first()->id;
                 })
                 ->relatableQueryUsing(function (NovaRequest $request, Builder $query) {
                     $query->reorder()->orderBy('sort', 'asc')->orderBy('id', 'desc');
                 })
-                ->dontReorderAssociatables()
-                ->textAlign('left'),
-
+                ->dontReorderAssociatables(),
 
             Trix::make('Description')
+                ->textAlign('left')
                 ->sortable()
                 ->nullable()
                 ->alwaysShow()
                 ->fullWidth()
-                ->textAlign('left'),
+                ->hideFromIndex()
+                ->hideFromDetail(),
 
             new Panel('Company', $this->companyFields()),
             new Panel('Responsibility', $this->responsibleFields()),
             new Panel('Info', $this->infoFields()),
 
             ColorBadge::make('Status')
-                //->sortable() TODO не работает
                 ->showOnIndex()
-                ->showOnCreating(false)
-                ->showOnUpdating(false)
-                ->showOnDetail(),
+                ->hideFromDetail()
+                ->hideWhenCreating()
+                ->hideWhenUpdating(),
+
+           /* TicketDetail::make('Ticket Detail')
+                ->hideFromIndex()
+                ->hideWhenCreating()
+                ->hideWhenUpdating()
+                ->resolveUsing(function ($value, $resource) {
+                    return $resource->toArray();
+                }),*/
+
+
+            HasMany::make('Comments')
+                ->textAlign('left'),
+
+        ];
+    }
+
+    protected function companyFields(): array
+    {
+        return [
+            BelongsTo::make('Company')
+                ->textAlign('left')
+                ->sortable()
+                ->hideFromDetail(),
+
+            BelongsTo::make('Contact', 'client', User::class)
+                ->textAlign('left')
+                ->sortable()
+                ->showWhenPeeking()
+                ->hideFromDetail()
+                ->default(function () {
+                    return auth()->user()->id;
+                })
+                ->dependsOn('company', function (BelongsTo $field, NovaRequest $request, FormData $formData) {
+                    $companyId = $formData->company;
+                    if (empty($companyId)) {
+                        $field->hide();
+                    }
+                    $field->relatableQueryUsing(function (NovaRequest $request, $query) use ($companyId) {
+                        return $query->whereHas('companies', function ($query) use ($companyId) {
+                            $query->where('companies.id', $companyId);
+                        });
+                    });
+                }),
         ];
     }
 
@@ -136,8 +180,9 @@ class Ticket extends Resource
     {
         return [
             BelongsTo::make('Responsible', 'responsible', User::class)
-                ->sortable()
                 ->textAlign('left')
+                ->sortable()
+                ->hideFromDetail()
                 ->default(function () {
                     return auth()->user()->id;
                 })
@@ -152,98 +197,69 @@ class Ticket extends Resource
         ];
     }
 
-    protected function companyFields(): array
-    {
-        return [
-            BelongsTo::make('Company')
-                ->sortable()
-                //->showWhenPeeking()
-                /*->default(function () {
-                    return auth()->user()->company_id;
-                })*/
-                ->textAlign('left'),
-
-            BelongsTo::make('Contact', 'client', User::class)
-                ->sortable()
-                ->textAlign('left')
-                ->showWhenPeeking()
-                ->default(function () {
-                    return auth()->user()->id;
-                })
-                ->dependsOn('company', function (BelongsTo $field, NovaRequest $request, FormData $formData) {
-                    $companyId = $formData->company;
-                    if (empty($companyId)) {
-                        $field->hide();
-                    }
-                    $field->relatableQueryUsing(function (NovaRequest $request, $query) use ($companyId) {
-                        return $query->whereHas('companies', function ($query) use ($companyId) {
-                            $query->where('companies.id', $companyId);
-                        });
-                    });
-
-                }),
-        ];
-    }
-
     protected function infoFields(): array
     {
         return [
             DateTime::make('Created At')
+                ->hideFromIndex()
+                ->hideFromDetail()
                 ->hideWhenCreating()
-                ->hideWhenUpdating()
-                ->hideFromIndex(),
+                ->hideWhenUpdating(),
 
             DateTime::make('Updated At')
+                ->hideFromIndex()
+                ->hideFromDetail()
                 ->hideWhenCreating()
                 ->hideWhenUpdating()
-                ->hideFromIndex()
                 ->canSee(function ($request) {
                     return $this->isUserSupport;
                 }),
 
             DateTime::make('Status Updated At')
+                ->hideFromIndex()
+                ->hideFromDetail()
                 ->hideWhenCreating()
-                ->hideWhenUpdating()
-                ->hideFromIndex(),
+                ->hideWhenUpdating(),
 
             DateTime::make('Resolution Deadline')
+                ->hideFromIndex()
+                ->hideFromDetail()
                 ->hideWhenCreating()
                 ->hideWhenUpdating()
-                ->hideFromIndex()
                 ->canSee(function ($request) {
                     return $this->isUserSupport;
                 }),
 
             DateTime::make('Response Date')
+                ->hideFromIndex()
+                ->hideFromDetail()
                 ->hideWhenCreating()
                 ->hideWhenUpdating()
-                ->hideFromIndex()
                 ->canSee(function ($request) {
                     return $this->isUserSupport;
                 }),
 
             DateTime::make('First Response')
+                ->hideFromIndex()
+                ->hideFromDetail()
                 ->hideWhenCreating()
                 ->hideWhenUpdating()
-                ->hideFromIndex()
                 ->canSee(function ($request) {
                     return $this->isUserSupport;
                 }),
 
             DateTime::make('Closed Date')
+                ->hideFromIndex()
+                ->hideFromDetail()
                 ->hideWhenCreating()
-                ->hideWhenUpdating()
-                ->hideFromIndex(),
+                ->hideWhenUpdating(),
 
             BelongsTo::make('Author', 'author', User::class)
-                ->sortable()
                 ->textAlign('left')
-                ->showOnIndex(false)
+                ->hideFromIndex()
+                ->hideFromDetail()
                 ->hideWhenCreating()
-                ->hideWhenUpdating()
-                ->default(function () {
-                    return auth()->user()->id;
-                }),
+                ->hideWhenUpdating(),
         ];
     }
 

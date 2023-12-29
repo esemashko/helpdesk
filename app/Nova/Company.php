@@ -78,14 +78,14 @@ class Company extends Resource
                 ->textAlign('left'),
 
 
-            BelongsToMany::make('Users')
+            BelongsToMany::make('Users', 'users', User::class)
                 ->showCreateRelationButton()
                 ->sortable()
                 ->nullable()
                 ->textAlign('left'),
 
-            HasManyThrough::make('Users')
-                ->textAlign('left'),
+           // HasManyThrough::make('Users')
+           //     ->textAlign('left'),
 
             HasMany::make('Tickets'),
         ];

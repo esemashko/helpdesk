@@ -2,7 +2,6 @@
 
 namespace App\Models\Scopes;
 
-use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
@@ -30,7 +29,7 @@ class CompanyScope implements Scope
             return;
         }
 
-        if ($this->user->hasPermissionTo('viewOwn'.$this->key)) {
+        if ($this->user->hasPermissionTo('viewOwn' . $this->key)) {
             $builder
                 ->whereIn('companies.id', function ($query) {
                     $query->select('company_id')

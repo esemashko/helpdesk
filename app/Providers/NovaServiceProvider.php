@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Nova\Attachment;
+use App\Nova\Comment;
 use App\Nova\Company;
 use App\Nova\Dashboards\Main;
 use App\Nova\Priority;
@@ -55,6 +57,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
 
                 MenuSection::make('HelpDesk', [
                     MenuItem::resource(Ticket::class),
+                    MenuItem::resource(Comment::class),
+                    MenuItem::resource(Attachment::class),
                     MenuItem::resource(Company::class),
                     MenuItem::resource(User::class),
                 ])->icon('collection')->collapsable(),

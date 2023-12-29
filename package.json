@@ -7,7 +7,9 @@
         "build-name-status": "cd nova-components/NameStatus && npm run dev",
         "build-name-status-prod": "cd nova-components/NameStatus && npm run prod",
         "build-color-badge": "cd nova-components/ColorBadge && npm run dev",
-        "build-color-badge-prod": "cd nova-components/ColorBadge && npm run prod"
+        "build-color-badge-prod": "cd nova-components/ColorBadge && npm run prod",
+        "build-ticket-detail": "cd nova-components/TicketDetail && npm run dev",
+        "build-ticket-detail-prod": "cd nova-components/TicketDetail && npm run prod"
     },
     "devDependencies": {
         "axios": "^1.6.1",

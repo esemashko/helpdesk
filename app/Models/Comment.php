@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Ticket extends Model
+class Comment extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -21,7 +21,7 @@ class Ticket extends Model
         'responsible_id',
     ];
 
-    protected $table = 'tickets';
+    protected $table = 'comments';
 
     protected $casts = [
         'created_at' => 'datetime',
@@ -38,38 +38,18 @@ class Ticket extends Model
         static::addGlobalScope(new TicketScope());
     }
 
-    public function priority()
-    {
-        return $this->belongsTo(Priority::class);
-    }
-
-    public function status()
-    {
-        return $this->belongsTo(Status::class);
-    }
-
-    public function company()
-    {
-        return $this->belongsTo(Company::class);
-    }
-
-    public function client()
-    {
-        return $this->belongsTo(User::class);
-    }
-
     public function author()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'author_id', 'id');
     }
 
-    public function responsible()
+    public function ticket()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Ticket::class);
     }
 
-    public function comments()
+    public function attachments()
     {
-        return $this->hasMany(Comment::class);
+        return $this->hasMany(Attachment::class);
     }
 }

@@ -29,7 +29,7 @@ class TicketScope implements Scope
             return;
         }
 
-        if ($this->user->hasPermissionTo('viewOwn'.$this->key)) {
+        if ($this->user->hasPermissionTo('viewOwn' . $this->key)) {
             $builder
                 ->where('client_id', $this->user->id)
                 ->orWhere('author_id', $this->user->id);
