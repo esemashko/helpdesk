@@ -10,7 +10,7 @@ Welcome to the repository of our Helpdesk solution, built on Laravel Nova. This 
 To get acquainted with the functionality of the Helpdesk, we invite you to visit our demo:
 
 - Link: [https://helpdesk.esemashko.com/](https://helpdesk.esemashko.com/)
-- Login: `info@semashko.com`
+- Login: `info@esemashko.com`
 - Password: `password`
 
 ## Participation and Development
