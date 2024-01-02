@@ -4,15 +4,11 @@ namespace App\Nova;
 
 use Esemashko\ColorBadge\ColorBadge;
 use Esemashko\NameStatus\NameStatus;
-use Esemashko\TicketDetail\TicketDetail;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
 use Laravel\Nova\Fields\BelongsTo;
-use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\FormData;
 use Laravel\Nova\Fields\HasMany;
-use Laravel\Nova\Fields\HasManyThrough;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Trix;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -32,7 +28,7 @@ class Ticket extends Resource
      *
      * @var string
      */
-    public static $title = 'name';
+    public static $title = 'id';
 
     /**
      * The columns that should be searched.
@@ -89,7 +85,7 @@ class Ticket extends Resource
                 ->textAlign('left')
                 ->rules('required', 'max:255')
                 ->hideFromIndex(),
-                //->hideFromDetail(),
+            //->hideFromDetail(),
 
             ColorBadge::make('Priority')
                 ->textAlign('left')
@@ -130,15 +126,6 @@ class Ticket extends Resource
                 ->hideFromDetail()
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
-
-           /* TicketDetail::make('Ticket Detail')
-                ->hideFromIndex()
-                ->hideWhenCreating()
-                ->hideWhenUpdating()
-                ->resolveUsing(function ($value, $resource) {
-                    return $resource->toArray();
-                }),*/
-
 
             HasMany::make('Comments')
                 ->textAlign('left'),
