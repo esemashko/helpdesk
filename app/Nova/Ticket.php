@@ -85,12 +85,10 @@ class Ticket extends Resource
                 ->textAlign('left')
                 ->rules('required', 'max:255')
                 ->hideFromIndex(),
-            //->hideFromDetail(),
 
             ColorBadge::make('Priority')
                 ->textAlign('left')
                 ->hideFromIndex()
-                //->hideFromDetail()
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
 
@@ -114,8 +112,7 @@ class Ticket extends Resource
                 ->nullable()
                 ->alwaysShow()
                 ->fullWidth()
-                ->hideFromIndex()
-                ->hideFromDetail(),
+                ->hideFromIndex(),
 
             new Panel('Company', $this->companyFields()),
             new Panel('Responsibility', $this->responsibleFields()),
@@ -138,14 +135,12 @@ class Ticket extends Resource
         return [
             BelongsTo::make('Company')
                 ->textAlign('left')
-                ->sortable()
-                ->hideFromDetail(),
+                ->sortable(),
 
             BelongsTo::make('Contact', 'client', User::class)
                 ->textAlign('left')
                 ->sortable()
                 ->showWhenPeeking()
-                ->hideFromDetail()
                 ->default(function () {
                     return auth()->user()->id;
                 })
@@ -169,7 +164,6 @@ class Ticket extends Resource
             BelongsTo::make('Responsible', 'responsible', User::class)
                 ->textAlign('left')
                 ->sortable()
-                ->hideFromDetail()
                 ->default(function () {
                     return auth()->user()->id;
                 })
@@ -189,7 +183,6 @@ class Ticket extends Resource
         return [
             DateTime::make('Created At')
                 ->hideFromIndex()
-                ->hideFromDetail()
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
 
@@ -210,9 +203,9 @@ class Ticket extends Resource
 
             DateTime::make('Resolution Deadline')
                 ->hideFromIndex()
-                ->hideFromDetail()
                 ->hideWhenCreating()
                 ->hideWhenUpdating()
+                ->hideFromDetail()
                 ->canSee(function ($request) {
                     return $this->isUserSupport;
                 }),
@@ -237,14 +230,12 @@ class Ticket extends Resource
 
             DateTime::make('Closed Date')
                 ->hideFromIndex()
-                ->hideFromDetail()
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
 
             BelongsTo::make('Author', 'author', User::class)
                 ->textAlign('left')
                 ->hideFromIndex()
-                ->hideFromDetail()
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
         ];
